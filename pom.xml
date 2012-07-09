@@ -14,7 +14,23 @@
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 	</properties>
+	<repositories>
+		<repository>
+			<id>teleal-repo</id>
+			<url>http://teleal.org/m2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
 	<dependencies>
+	    <!-- UPNP library -->
+	    <dependency>
+        	<groupId>org.teleal.cling</groupId>
+        	<artifactId>cling-core</artifactId>
+        	<version>1.0.5</version>
+    	</dependency>
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
