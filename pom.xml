@@ -25,10 +25,15 @@
 	</repositories>
 	
 	<dependencies>
-	    <!-- UPNP library -->
+	    <!-- UPNP libraries -->
 	    <dependency>
         	<groupId>org.teleal.cling</groupId>
         	<artifactId>cling-core</artifactId>
+        	<version>1.0.5</version>
+    	</dependency>
+        <dependency>
+        	<groupId>org.teleal.cling</groupId>
+        	<artifactId>cling-support</artifactId>
         	<version>1.0.5</version>
     	</dependency>
 		<!-- Spring -->

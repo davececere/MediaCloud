@@ -1,14 +1,28 @@
 package com.cecere.spike;
 
 
+import java.util.Collection;
+
 import org.junit.Test;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.controlpoint.ActionCallback;
+import org.teleal.cling.model.action.ActionInvocation;
+import org.teleal.cling.model.message.UpnpResponse;
 import org.teleal.cling.model.message.header.STAllHeader;
+import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
+import org.teleal.cling.model.meta.Service;
+import org.teleal.cling.model.types.ServiceType;
+import org.teleal.cling.model.types.UDAServiceType;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
+import org.teleal.cling.support.avtransport.callback.Play;
+import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
+import org.teleal.cling.support.contentdirectory.callback.Browse;
+import org.teleal.cling.support.model.BrowseFlag;
+import org.teleal.cling.support.model.DIDLContent;
 
 
 public class ClingTest {
@@ -86,7 +100,76 @@ public class ClingTest {
 		// Let's wait 10 seconds for them to respond
 		System.out.println("Waiting 10 seconds before shutting down...");
 		Thread.sleep(10000);
+		
 
+		//get media servers
+		ServiceType serviceType = new UDAServiceType("ContentDirectory", 1);  //urn:upnp-org:serviceId:ContentDirectory
+		Collection<Device> devices = upnpService.getRegistry().getDevices(serviceType);
+		Service contentDirectoryService = devices.iterator().next().findService(serviceType);
+		
+		//get renderers
+		ServiceType rendererServiceType = new UDAServiceType("AVTransport",1);
+		Collection<Device> rendererDevices = upnpService.getRegistry().getDevices(rendererServiceType);
+		Service rendererService = rendererDevices.iterator().next().findService(rendererServiceType);
+		
+		//0 is root
+		//21 is music
+		//32 is photo
+		//33 is video
+		//33/3379 is Home Movies
+		//33/3380 is Home Movies/2012
+		//33/@1384 videoItem hackmatch2
+		ActionCallback browseAction = new Browse(contentDirectoryService, "33/3380", BrowseFlag.DIRECT_CHILDREN){
+			
+			@Override
+			public void received(ActionInvocation actionInvocation,
+					DIDLContent didl) {
+				// TODO Auto-generated method stub
+				return;
+			}
+
+			@Override
+			public void updateStatus(Status status) {
+				// TODO Auto-generated method stub
+				return;
+			}
+
+			@Override
+			public void failure(ActionInvocation invocation,
+					UpnpResponse operation, String defaultMsg) {
+				// TODO Auto-generated method stub
+				return;
+			}
+		};
+		browseAction.setControlPoint(upnpService.getControlPoint());
+		new Thread(browseAction).start();
+		
+		
+		String mediaUri = "http://192.168.1.2:50002/v/NDLNA/1384.m4v"; //pull from VideoItem
+		
+		ActionCallback setUriAction = new SetAVTransportURI(rendererService,mediaUri){
+			@Override
+			public void failure(ActionInvocation invocation,
+					UpnpResponse operation, String defaultMsg) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
+		setUriAction.setControlPoint(upnpService.getControlPoint());
+		new Thread(setUriAction).start();
+		
+		ActionCallback playAction = new Play(rendererService){
+
+			@Override
+			public void failure(ActionInvocation invocation,
+					UpnpResponse operation, String defaultMsg) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		playAction.setControlPoint(upnpService.getControlPoint());
+		new Thread(playAction).start();
 		// Release all resources and advertise BYEBYE to other UPnP devices
 		System.out.println("Stopping Cling...");
 		upnpService.shutdown();
