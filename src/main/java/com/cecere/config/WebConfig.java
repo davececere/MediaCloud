@@ -1,4 +1,4 @@
-package com.cecere.springdemo.config;
+package com.cecere.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import com.cecere.springdemo.config.ControllerConfig;
+import com.cecere.springdemo.config.ServiceConfig;
 import com.cecere.springdemo.domain.DemoObject;
 
 @EnableWebMvc

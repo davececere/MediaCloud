@@ -1,4 +1,4 @@
-package com.cecere.springdemo.config;
+package com.cecere.config;
 
 
 import javax.persistence.EntityManager;
