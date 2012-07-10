@@ -20,14 +20,36 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.teleal.cling.support.model.item.Item;
 
+import com.cecere.cling.converter.ClingItemToContentConverter;
+import com.cecere.converter.Converter;
+import com.cecere.domain.dlna.Content;
+import com.cecere.repository.ReadOnlyTreeRepository;
+import com.cecere.repository.dlna.DlnaContentRepository;
 import com.cecere.springdemo.repository.DemoObjectRepository;
 import com.cecere.springdemo.domain.DemoObject;
 
 @Configuration
-@EnableTransactionManagement
-@ImportResource( "classpath*:*springDataConfig.xml") //has to be xml until supported in javaconfig
+//dont need database stuff or spring data yet
+//@EnableTransactionManagement
+//@ImportResource( "classpath*:*springDataConfig.xml") //has to be xml until supported in javaconfig
 public class RepositoryConfig {
+	
+	@Bean
+	public ReadOnlyTreeRepository dlnaContentRepository() throws InterruptedException{
+		ReadOnlyTreeRepository ret = new DlnaContentRepository(clingItemToContentConverter());
+		((DlnaContentRepository)ret).initClingService();
+		Thread.sleep(10000);//TODO: find better way than to just wait for registry to fill up
+		((DlnaContentRepository)ret).initContents();
+		return ret;
+	}
+	
+	@Bean
+	public Converter<Item,Content> clingItemToContentConverter(){
+		return new ClingItemToContentConverter();
+	}
+	/* dont need database yet
     @Bean
     public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
@@ -53,4 +75,5 @@ public class RepositoryConfig {
     public PlatformTransactionManager transactionManager() {
     	return new JpaTransactionManager(entityManagerFactory().getObject());
     }
+    */
 }

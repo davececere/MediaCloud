@@ -1,10 +1,10 @@
-package com.cecere.spike;
+package com.cecere.repository.dlna;
 
-
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
-import org.junit.Test;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ActionCallback;
@@ -19,18 +19,30 @@ import org.teleal.cling.model.types.ServiceType;
 import org.teleal.cling.model.types.UDAServiceType;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
-import org.teleal.cling.support.avtransport.callback.Play;
-import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
 import org.teleal.cling.support.contentdirectory.callback.Browse;
+import org.teleal.cling.support.contentdirectory.callback.Browse.Status;
 import org.teleal.cling.support.model.BrowseFlag;
 import org.teleal.cling.support.model.DIDLContent;
+import org.teleal.cling.support.model.item.Item;
 
+import com.cecere.cling.CollectBrowseItemsActionCallback;
+import com.cecere.converter.Converter;
+import com.cecere.domain.dlna.Content;
+import com.cecere.repository.ReadOnlyTreeRepository;
 
-public class ClingTest {
-
-	@Test
-	public void testListener() throws InterruptedException{
+public class DlnaContentRepository implements ReadOnlyTreeRepository<Content> {
+	private UpnpService upnpService; //hold instance of initialized cling service singleton
+	//synchronized for multithreaded cling or repository client access
+	private List<Content> contents = Collections.synchronizedList(new ArrayList<Content>()); 
+	private Converter<Item,Content> converter;
+	
+	public DlnaContentRepository(Converter<Item,Content> converter){
+		this.converter = converter;
+	}
+	
+	public void initClingService(){
 		// UPnP discovery is asynchronous, we need a callback
+		//TODO: move to registry listener subclass
 		RegistryListener listener = new RegistryListener() {
 
 			public void remoteDeviceDiscoveryStarted(Registry registry,
@@ -90,89 +102,28 @@ public class ClingTest {
 
 			}
 		};
-
 		// This will create necessary network resources for UPnP right away
 		System.out.println("Starting Cling...");
-		UpnpService upnpService = new UpnpServiceImpl(listener);
-
-		// Send a search message to all devices and services, they should respond soon
+		//TODO: extract to shared component with single init search
+		upnpService = new UpnpServiceImpl(listener);
+		// Send a search message to all devices and services, they should respond soon and populate the registry
 		upnpService.getControlPoint().search(new STAllHeader());
-
-		// Let's wait 10 seconds for them to respond
-		System.out.println("Waiting 10 seconds before shutting down...");
-		Thread.sleep(10000);
 		
-
+	}
+	
+	public void initContents(){
 		//get media servers
 		ServiceType serviceType = new UDAServiceType("ContentDirectory", 1);  //urn:upnp-org:serviceId:ContentDirectory
 		Collection<Device> devices = upnpService.getRegistry().getDevices(serviceType);
 		Service contentDirectoryService = devices.iterator().next().findService(serviceType);
 		
-		//get renderers
-		ServiceType rendererServiceType = new UDAServiceType("AVTransport",1);
-		Collection<Device> rendererDevices = upnpService.getRegistry().getDevices(rendererServiceType);
-		Service rendererService = rendererDevices.iterator().next().findService(rendererServiceType);
-		
-		//0 is root
-		//21 is music
-		//32 is photo
-		//33 is video
-		//33/3379 is Home Movies
-		//33/3380 is Home Movies/2012
-		//33/@1384 videoItem hackmatch2
-		ActionCallback browseAction = new Browse(contentDirectoryService, "33/3380", BrowseFlag.DIRECT_CHILDREN){
-			
-			@Override
-			public void received(ActionInvocation actionInvocation,
-					DIDLContent didl) {
-				// TODO Auto-generated method stub
-				return;
-			}
-
-			@Override
-			public void updateStatus(Status status) {
-				// TODO Auto-generated method stub
-				return;
-			}
-
-			@Override
-			public void failure(ActionInvocation invocation,
-					UpnpResponse operation, String defaultMsg) {
-				// TODO Auto-generated method stub
-				return;
-			}
-		};
-		browseAction.setControlPoint(upnpService.getControlPoint());
-		new Thread(browseAction).start();
-		
-		
-		String mediaUri = "http://192.168.1.2:50002/v/NDLNA/1384.m4v"; //pull from VideoItem
-		
-		ActionCallback setUriAction = new SetAVTransportURI(rendererService,mediaUri){
-			@Override
-			public void failure(ActionInvocation invocation,
-					UpnpResponse operation, String defaultMsg) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		};
-		setUriAction.setControlPoint(upnpService.getControlPoint());
-		new Thread(setUriAction).start();
-		
-		ActionCallback playAction = new Play(rendererService){
-
-			@Override
-			public void failure(ActionInvocation invocation,
-					UpnpResponse operation, String defaultMsg) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-		playAction.setControlPoint(upnpService.getControlPoint());
-		new Thread(playAction).start();
-		// Release all resources and advertise BYEBYE to other UPnP devices
-		System.out.println("Stopping Cling...");
-		upnpService.shutdown();
+		ActionCallback browseAndCollectAction = new CollectBrowseItemsActionCallback<Content>(contentDirectoryService, "33/3380", BrowseFlag.DIRECT_CHILDREN,upnpService.getControlPoint(),converter,contents);
+		browseAndCollectAction.run();
 	}
+	
+	@Override
+	public List<Content> findAllChildren() {
+		return Collections.unmodifiableList(contents);
+	}
+
 }
