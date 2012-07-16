@@ -17,16 +17,19 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import com.cecere.springdemo.config.ControllerConfig;
-import com.cecere.springdemo.config.ServiceConfig;
-import com.cecere.springdemo.domain.DemoObject;
+import com.cecere.dlna.domain.Content;
+import com.cecere.mediacloud.config.ClingConfig;
+import com.cecere.mediacloud.config.ControllerConfig;
+import com.cecere.mediacloud.config.RepositoryConfig;
+import com.cecere.mediacloud.config.ServiceConfig;
+
 
 @EnableWebMvc
 @Configuration
-@Import({ControllerConfig.class,ServiceConfig.class,RepositoryConfig.class})
-@ImportResource( "classpath*:*springDataConfig.xml")
+@Import({ControllerConfig.class,ServiceConfig.class,RepositoryConfig.class,ClingConfig.class,PersistenceConfig.class})
+//@ImportResource( "classpath*:*springDataConfig.xml")
 public class WebConfig extends WebMvcConfigurerAdapter {
-	  private static final Class<?>[] JAXB_CLASSES_TO_BE_BOUND = {DemoObject.class};
+	  private static final Class<?>[] JAXB_CLASSES_TO_BE_BOUND = {Content.class};
 
 	  @Bean
 	  public RequestMappingHandlerAdapter getHandlerAdapter() {

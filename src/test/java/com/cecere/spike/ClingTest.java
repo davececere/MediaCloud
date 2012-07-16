@@ -28,7 +28,7 @@ import org.teleal.cling.support.model.DIDLContent;
 
 public class ClingTest {
 
-	@Test
+	//@Test   dont run by default since it actually plays content
 	public void testListener() throws InterruptedException{
 		// UPnP discovery is asynchronous, we need a callback
 		RegistryListener listener = new RegistryListener() {
