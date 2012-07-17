@@ -10,6 +10,7 @@ import com.cecere.mediacloud.service.DeviceService;
 import com.cecere.mediacloud.service.DeviceServiceImpl;
 import com.cecere.repository.ContentRepository;
 import com.cecere.repository.DeviceRepository;
+import com.cecere.repository.RendererRepository;
 
 @Configuration
 public class ServiceConfig {
@@ -18,6 +19,8 @@ public class ServiceConfig {
 	private ContentRepository contentRepository;
 	@Autowired
 	private DeviceRepository deviceRepository;
+	@Autowired
+	private RendererRepository rendererRepository;
 
 	@Bean
 	public ContentService contentService(){
@@ -26,6 +29,6 @@ public class ServiceConfig {
 	
 	@Bean
 	public DeviceService deviceService(){
-		return new DeviceServiceImpl(deviceRepository);
+		return new DeviceServiceImpl(deviceRepository,rendererRepository);
 	}
 }

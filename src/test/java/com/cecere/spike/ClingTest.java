@@ -28,7 +28,7 @@ import org.teleal.cling.support.model.DIDLContent;
 
 public class ClingTest {
 
-	//@Test   dont run by default since it actually plays content
+	@Test   //dont run by default since it actually plays content
 	public void testListener() throws InterruptedException{
 		// UPnP discovery is asynchronous, we need a callback
 		RegistryListener listener = new RegistryListener() {
@@ -106,7 +106,12 @@ public class ClingTest {
 		//get media servers
 		ServiceType serviceType = new UDAServiceType("ContentDirectory", 1);  //urn:upnp-org:serviceId:ContentDirectory
 		Collection<Device> devices = upnpService.getRegistry().getDevices(serviceType);
-		Service contentDirectoryService = devices.iterator().next().findService(serviceType);
+		Device synology = null;
+		for(Device d: devices){
+			if(d.getDisplayString().equals("Synology Inc DS411slim"))
+				synology = d;
+		}
+		Service contentDirectoryService = synology.findService(serviceType);
 		
 		//get renderers
 		ServiceType rendererServiceType = new UDAServiceType("AVTransport",1);
@@ -145,7 +150,7 @@ public class ClingTest {
 		browseAction.setControlPoint(upnpService.getControlPoint());
 		new Thread(browseAction).start();
 		
-		
+		/*
 		String mediaUri = "http://192.168.1.2:50002/v/NDLNA/1384.m4v"; //pull from VideoItem
 		
 		ActionCallback setUriAction = new SetAVTransportURI(rendererService,mediaUri){
@@ -172,6 +177,7 @@ public class ClingTest {
 		playAction.setControlPoint(upnpService.getControlPoint());
 		new Thread(playAction).start();
 		// Release all resources and advertise BYEBYE to other UPnP devices
+		*/
 		System.out.println("Stopping Cling...");
 		upnpService.shutdown();
 	}

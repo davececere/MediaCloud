@@ -39,7 +39,12 @@ public class DlnaContentRepository implements ContentRepository {
 		ServiceType serviceType = new UDAServiceType("ContentDirectory", 1);  //urn:upnp-org:serviceId:ContentDirectory
 		Collection<Device> devices = upnpService.getRegistry().getDevices(serviceType);
 		//TODO: check all devices
-		Service contentDirectoryService = devices.iterator().next().findService(serviceType);
+		Device synology = null;
+		for(Device d: devices){
+			if(d.getDisplayString().equals("Synology Inc DS411slim"))
+				synology = d;
+		}
+		Service contentDirectoryService = synology.findService(serviceType);
 		
 		ActionCallback browseAndCollectAction = new CollectBrowseItemsActionCallback<Content>(contentDirectoryService, nodeId, BrowseFlag.DIRECT_CHILDREN,upnpService.getControlPoint(),this,contentConverter,contents);
 		browseAndCollectAction.run();

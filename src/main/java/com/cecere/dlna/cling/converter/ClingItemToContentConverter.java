@@ -12,6 +12,7 @@ public class ClingItemToContentConverter implements Converter<Item, Content> {
 		Content ret = new Content();
 		ret.setId(from.getId());
 		ret.setTitle(from.getTitle());
+		ret.setMediaUri(from.getResources().get(0).getValue());
 		return ret;
 	}
 

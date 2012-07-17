@@ -11,7 +11,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import com.cecere.dlna.domain.Content;
 import com.cecere.dlna.domain.Device;
+import com.cecere.dlna.domain.Renderer;
 import com.cecere.mediacloud.config.ClingConfig;
 import com.cecere.mediacloud.config.ControllerConfig;
 import com.cecere.mediacloud.config.RepositoryConfig;
@@ -24,6 +26,9 @@ public class DeviceControllerIT {
 	@Autowired
 	private DeviceController controller;
 	
+	@Autowired
+	private ContentController contentController;
+	
 	@Test
 	public void testDevices(){
 		List<Device> devices = controller.getAllDevices();
@@ -34,4 +39,21 @@ public class DeviceControllerIT {
 		}
 	}
 	
+	@Test
+	public void testRenderers(){
+		List<Renderer> devices = controller.getAllRenderers();
+		assertFalse(devices.isEmpty());
+		for(Device d: devices){
+			System.out.println("name: "+d.getName());
+			assertNotNull(d.getName());
+		}
+	}
+	
+	
+	@Test
+	public void testPlayMedia(){
+		String rendererName = "Samsung Electronics UN55D7050 AllShare1.0"; //"Bubblesoft BubbleUPnP Media Renderer 1.4.4.1";
+		List<Content> contents = contentController.getAllContents();
+		controller.playContentOnRenderer(rendererName, contents.get(0));
+	}
 }
