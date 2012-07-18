@@ -6,9 +6,9 @@ Ext.application({
     ],
 
     views: ['Main'],
-    stores: ['Contents','Devices'],
-    models: ['Content','Device'],
-    controllers: ['Devices'],
+    stores: ['Contents','Devices','Renderers'],
+    models: ['Content','Device','Renderer'],
+    controllers: ['Devices','Renderers','Contents'],
 
     icon: {
         '57': 'resources/icons/Icon.png',

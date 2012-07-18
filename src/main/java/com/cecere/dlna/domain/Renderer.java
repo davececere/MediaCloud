@@ -18,6 +18,9 @@ public class Renderer extends Device {
 
 	private ControlPoint controlPoint;
 	private Service rendererService;
+	//has to be flat due to sencha limitation on one-to-one mappings
+	//this is annoying since its in this class instead of a subresource due to another sencha limition with using subresource rest calls
+	private String nowPlayingContentId; 
 	
 	public Renderer(ControlPoint controlPoint, Service rendererService){
 		this.controlPoint = controlPoint;
@@ -49,5 +52,13 @@ public class Renderer extends Device {
 		};
 		playAction.setControlPoint(controlPoint);
 		new Thread(playAction).start(); //TODO: use threadpool
+	}
+
+	public String getNowPlayingContentId() {
+		return nowPlayingContentId;
+	}
+
+	public void setNowPlayingContentId(String nowPlayingContentId) {
+		this.nowPlayingContentId = nowPlayingContentId;
 	}
 }

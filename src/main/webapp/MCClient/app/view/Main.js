@@ -8,7 +8,8 @@ Ext.define("MCClient.view.Main", {
         'Ext.plugin.PullRefresh',
         'Ext.carousel.Carousel',
         'MCClient.store.Contents',
-        'MCClient.store.Devices'
+        'MCClient.store.Devices',
+        'MCClient.store.Renderers'
     ],
     config: {
         tabBarPosition: 'bottom',
@@ -60,6 +61,32 @@ Ext.define("MCClient.view.Main", {
                 ]
             },
             {
+                title: 'Renderers',
+                iconCls: 'action',
+                layout: 'fit',
+                items: [
+                    {
+                        docked: 'top',
+                        xtype: 'titlebar',
+                        title: 'Renderers'
+                    },
+                    {
+                        xtype: 'carousel',
+                        id: 'renderersCarousel',
+
+                        //the direction is horizontal
+                        direction: 'vertical',
+
+                        //we turn on direction lock so you cannot scroll diagonally
+                        directionLock: true,
+
+                        //and give it the items array
+                        //items: [{html:"test1"},{html:"test2"}]
+                        store: 'Renderers'
+                    }
+                ]
+            },
+            {
             	title: 'Contents',
             	iconCls: 'action',
                 layout: 'fit',
@@ -71,6 +98,7 @@ Ext.define("MCClient.view.Main", {
                             title: 'Content List'
                         },
             	        {
+                        		id: 'contentsList',
             	                //give it an xtype of list for the list component
             	                xtype: 'list',
 

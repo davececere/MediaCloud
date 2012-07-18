@@ -24,6 +24,6 @@ public class ControllerConfig {
 	
 	@Bean
 	public DeviceController deviceController(){
-		return new DeviceController(deviceService);
+		return new DeviceController(deviceService,contentService);
 	}
 }

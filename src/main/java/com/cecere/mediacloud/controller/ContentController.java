@@ -24,7 +24,7 @@ public class ContentController {
 
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(
-			value = "/content", 
+			value = "/contents", 
 			method = RequestMethod.GET,
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
 	)

@@ -11,6 +11,7 @@ public class ClingDeviceToDeviceConverter implements Converter<Device, com.cecer
 	public com.cecere.dlna.domain.Device convertTo(Device from) {
 		com.cecere.dlna.domain.Device ret = new com.cecere.dlna.domain.Device();
 		ret.setName(from.getDisplayString());
+		ret.setId(from.getDisplayString());
 		return ret;
 	}
 

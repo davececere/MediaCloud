@@ -21,54 +21,69 @@ import com.cecere.mediacloud.service.DeviceService;
 @Controller
 public class DeviceController {
 	
-	private DeviceService service;
+	private DeviceService deviceService;
+	private ContentService contentService;
 	
-	public DeviceController(DeviceService service){
-		this.service = service;
+	public DeviceController(DeviceService deviceService,ContentService contentService){
+		this.deviceService = deviceService;
+		this.contentService = contentService;
 	}
 
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(
-			value = "/device", 
+			value = "/devices", 
 			method = RequestMethod.GET,
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
 	)
 	public @ResponseBody List<Device> getAllDevices() {
-		return service.findAllDevices();
+		return deviceService.findAllDevices();
 	}
 	
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(
-			value = "/renderer", 
+			value = "/renderers", 
 			method = RequestMethod.GET,
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
 	)
 	public @ResponseBody List<Renderer> getAllRenderers() {
-		return service.findAllRenderers();
+		return deviceService.findAllRenderers();
 	}
 	
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@RequestMapping(
-			value = "/renderer/{name}/nowPlaying", 
+			value = "/renderers/{id}", 
 			method = RequestMethod.PUT,
 			consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
 			produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
 	)
-	public @ResponseBody Content playContentOnRenderer(@PathVariable("name") String rendererName,@RequestBody Content content) {
-		List<Renderer> renderers = service.findAllRenderers();
-		//move to get renderer by name service method
-		boolean found = false;
+	public @ResponseBody Renderer playContentOnRenderer(@PathVariable("id") String rendererName,@RequestBody Renderer rendererToUpdate) {
+		
+		List<Renderer> renderers = deviceService.findAllRenderers();
+		Renderer actualRenderer = null;
+		//TODO: move to get renderer by name service method
 		for(Renderer r: renderers){
 			if(r.getName().equals(rendererName)){
-				service.playMediaOnRenderer(r, content);
-				found = true;
+				actualRenderer = r;
+				if(rendererToUpdate.getNowPlayingContentId() != null) {
+					//TODO: move to getcontent by id service
+					List<Content> contents = contentService.findAllContent();
+					boolean contentFound = false;
+					for(Content c: contents){
+						if(c.getId().equals(rendererToUpdate.getNowPlayingContentId())){
+							contentFound = true;
+							deviceService.playMediaOnRenderer(r, c);
+							break;
+						}
+					}
+				}
 				break;
 			}
 		}
 		//TODO: change to exception with HttpStatus set appropriately
-		if(!found)
+		if(actualRenderer == null)
 			throw new RuntimeException("renderer not found");
-		return content;
+		
+		return actualRenderer;
 	}
 	
 }

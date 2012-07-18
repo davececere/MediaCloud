@@ -5,6 +5,10 @@ Ext.define('MCClient.model.Device', {
     config: {
         fields: [
                  { name: 'name', type: 'string' }
-        ]
+        ],
+        proxy: {
+            type: 'rest',
+            url: '../devices' //'http://localhost:8080/springrest/devices'
+        }
     }
 });

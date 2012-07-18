@@ -17,13 +17,6 @@ Ext.define('MCClient.store.Devices', {
             groupFn: function(record) {
                 return record.get('name')[0];
             }
-        },
-
-        //setup the proxy for the store to use an ajax proxy and give it a url to load
-        //the local contacts.json file
-        proxy: {
-            type: 'ajax',
-            url: 'device.json' //'http://localhost:8080/springrest/device'
         }
     }
 });

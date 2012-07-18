@@ -54,6 +54,9 @@ public class DeviceControllerIT {
 	public void testPlayMedia(){
 		String rendererName = "Samsung Electronics UN55D7050 AllShare1.0"; //"Bubblesoft BubbleUPnP Media Renderer 1.4.4.1";
 		List<Content> contents = contentController.getAllContents();
-		controller.playContentOnRenderer(rendererName, contents.get(0));
+		Renderer r = new Renderer(null,null);
+		r.setName(rendererName);
+		r.setNowPlayingContentId(contents.get(0).getId());
+		controller.playContentOnRenderer(rendererName,r);
 	}
 }
