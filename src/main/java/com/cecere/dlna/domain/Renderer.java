@@ -22,6 +22,10 @@ public class Renderer extends Device {
 	//this is annoying since its in this class instead of a subresource due to another sencha limition with using subresource rest calls
 	private String nowPlayingContentId; 
 	
+	public Renderer(){
+		//default constructor for use by JSON marshalling
+	}
+	
 	public Renderer(ControlPoint controlPoint, Service rendererService){
 		this.controlPoint = controlPoint;
 		this.rendererService = rendererService;

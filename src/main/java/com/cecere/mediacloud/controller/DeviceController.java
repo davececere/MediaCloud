@@ -62,7 +62,7 @@ public class DeviceController {
 		Renderer actualRenderer = null;
 		//TODO: move to get renderer by name service method
 		for(Renderer r: renderers){
-			if(r.getName().equals(rendererName)){
+			if(r.getId().equals(rendererName)){
 				actualRenderer = r;
 				if(rendererToUpdate.getNowPlayingContentId() != null) {
 					//TODO: move to getcontent by id service

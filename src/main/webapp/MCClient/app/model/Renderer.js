@@ -10,6 +10,10 @@ Ext.define('MCClient.model.Renderer', {
         ],
         proxy: {
             type: 'rest',
+            appendId: true, //default
+            headers: {                
+                'Accept' : 'application/json'                 
+            },
             url: '../renderers' //'http://localhost:8080/springrest/renderers'
         }
     }

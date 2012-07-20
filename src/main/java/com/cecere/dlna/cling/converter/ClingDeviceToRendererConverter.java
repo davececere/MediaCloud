@@ -23,7 +23,7 @@ public class ClingDeviceToRendererConverter implements Converter<Device, Rendere
 		
 		Renderer ret = new Renderer(controlPoint,rendererService);
 		ret.setName(from.getDisplayString());
-		ret.setId(from.getDisplayString());
+		ret.setId(from.getIdentity().getUdn().getIdentifierString());
 		return ret;
 	}
 
